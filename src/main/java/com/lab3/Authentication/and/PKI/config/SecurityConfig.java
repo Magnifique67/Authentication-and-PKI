@@ -33,11 +33,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/authenticate").permitAll()  // Authentication endpoint
-                        .requestMatchers("/api/status").permitAll()      // Status endpoint
-                        .anyRequest().authenticated()                     // Other endpoints require authentication
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/api/authenticate").permitAll()
+                        .requestMatchers("/api/status").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .formLogin(form -> form
+                        .permitAll()
+                        .defaultSuccessUrl("/api/status", true)
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
